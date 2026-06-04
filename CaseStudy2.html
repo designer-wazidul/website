@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vestige Checkout — Case Study 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F6F3EE;
+    --bg-alt: #EDEAE3;
+    --bg-warm: #F0EBE2;
+    --ink: #141210;
+    --ink-2: #7A756F;
+    --ink-3: #B5B0A8;
+    --accent: #4F3017;
+    --accent-mid: #3A6B52;
+    --accent-light: #D6CCBD;
+    --accent-warm: #C4A882;
+    --warm-soft: #EDE5D8;
+    --white: #FDFCFA;
+    --font: 'Lexend', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    font-size: 20px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: none;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Core Cursor Fix: Elevated z-index values to float above Lightbox (10000) */
+  #cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--ink); border-radius: 50%;
+    pointer-events: none; z-index: 10002;
+    transform: translate(-50%, -50%);
+    transition: width .25s, height .25s;
+    mix-blend-mode: multiply;
+  }
+  #cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid var(--ink); border-radius: 50%;
+    pointer-events: none; z-index: 10001;
+    transform: translate(-50%, -50%);
+    opacity: 0.5; transition: transform .12s ease-out, width .25s, height .25s, border-color .25s;
+  }
+  
+  /* Hover and active states for cursor feedback */
+  body:has(a:hover) #cursor, body:has(button:hover) #cursor, body:has(.scroll-image-wrap:hover) #cursor { width: 4px; height: 4px; background: var(--accent-warm); }
+  body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring, body:has(.scroll-image-wrap:hover) #cursor-ring { width: 56px; height: 56px; opacity: 0.4; border-color: var(--accent-warm); }
+  
+  /* Tactile compression ring behavior when pressing down anywhere */
+  body:active #cursor-ring {
+    width: 24px;
+    height: 24px;
+    border-color: var(--accent);
+    opacity: 0.8;
+  }
+
+  #progress {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--accent-warm); z-index: 200; width: 0%;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 28px 48px;
+    background: rgba(246,243,238,0.88);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent; transition: border-color .3s;
+  }
+  nav.scrolled { border-bottom-color: var(--accent-light); }
+  .nav-back {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 400; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-2);
+    text-decoration: none; cursor: none; transition: color .2s;
+  }
+  .nav-back:hover { color: var(--ink); }
+  .nav-back svg { transition: transform .25s; }
+  .nav-back:hover svg { transform: translateX(-4px); }
+  .nav-center { font-size: 12px; font-weight: 500; letter-spacing: .08em; color: var(--ink-3); }
+  .nav-tag {
+    font-size: 12px; font-weight: 500; letter-spacing: .14em;
+    text-transform: uppercase; padding: 6px 14px;
+    border: 1px solid var(--accent-light); color: var(--ink-2);
+  }
+
+  /* Hero */
+  .hero {
+    padding: 160px 48px 60px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .hero-eyebrow {
+    font-size: 12px; font-weight: 500; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeUp .7s ease forwards .2s;
+  }
+  .hero-eyebrow::before {
+    content: '02'; font-size: 12px; color: var(--accent-warm);
+    background: var(--warm-soft); padding: 4px 10px;
+  }
+  .hero-title {
+    font-size: clamp(36px, 4.5vw, 68px); font-weight: 200;
+    line-height: 1.08; letter-spacing: -.03em; margin-bottom: 32px;
+    opacity: 0; animation: fadeUp .8s ease forwards .4s;
+  }
+  .hero-title strong { font-weight: 700; display: block; color: var(--accent-warm); }
+  .hero-desc {
+    font-size: 16px; font-weight: 300; line-height: 1.8;
+    color: var(--ink-2); max-width: 440px;
+    opacity: 0; animation: fadeUp .8s ease forwards .6s;
+  }
+  .hero-right { opacity: 0; animation: fadeUp .8s ease forwards .5s; }
+  
+  /* Overview Box */
+  .hero-overview {
+    background: var(--white); border: 1px solid var(--accent-light); margin: 0 48px 80px;
+  }
+  .overview-row { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .overview-cell { padding: 28px 32px; border-bottom: 1px solid var(--accent-light); border-right: 1px solid var(--accent-light); }
+  .overview-cell:nth-child(3n) { border-right: none; }
+  .overview-cell:nth-last-child(-n+3) { border-bottom: none; }
+  .ov-label { font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+  .ov-val { font-size: 13px; font-weight: 400; line-height: 1.5; }
+
+  /* Hero visual */
+  .hero-visual {
+    margin: 0 48px; height: 440px;
+    background: linear-gradient(145deg, #EDE5D8 0%, #E8DDD0 100%);
+    position: relative; overflow: hidden;
+    opacity: 0; animation: fadeUp .9s ease forwards .7s;
+  }
+  .hero-visual::before {
+    content: ''; position: absolute;
+    width: 350px; height: 350px; border-radius: 50%;
+    background: rgba(196,168,130,0.12);
+    top: -80px; right: -60px;
+  }
+  /* Desktop mockup */
+  .desktop-shell {
+    position: absolute; inset: 40px;
+    background: white; border-radius: 12px;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .desktop-topbar {
+    height: 32px; background: #F9F9F9;
+    border-bottom: 1px solid #EEE;
+    display: flex; align-items: center; padding: 0 16px; gap: 6px;
+  }
+  .dt-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dt-url {
+    flex: 1; height: 16px; background: #EEE; border-radius: 8px;
+    margin: 0 16px; max-width: 200px;
+  }
+  .desktop-body {
+    display: grid; grid-template-columns: 1fr 380px; height: calc(100% - 32px);
+  }
+  .checkout-left { padding: 24px; }
+  .ck-step-row {
+    display: flex; align-items: center; gap: 0; margin-bottom: 20px;
+  }
+  .ck-step {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 400; color: var(--ink-3);
+    padding: 0 12px 0 0;
+  }
+  .ck-step.active { color: var(--accent); font-weight: 600; }
+  .ck-step.done { color: var(--accent-warm); }
+  .ck-step-num {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .ck-step.done .ck-step-num { background: var(--accent-warm); border-color: var(--accent-warm); color: white; }
+  .ck-step.active .ck-step-num { background: var(--accent); border-color: var(--accent); color: white; }
+  .ck-step-line { flex: 1; height: 1px; background: #EEE; margin: 0 -4px; }
+  .ck-section-title { font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: .04em; margin-bottom: 12px; }
+  .ck-field-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .ck-field {
+    flex: 1; height: 28px; background: #F8F8F8;
+    border: 1px solid #EEE; border-radius: 4px;
+  }
+  .ck-field.focused { border-color: var(--accent); }
+  .ck-label { font-size: 12px; color: var(--ink-2); margin-bottom: 3px; }
+  .ck-btn {
+    width: 100%; height: 32px; background: var(--accent); border-radius: 6px;
+    margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .ck-btn-text { font-size: 12px; font-weight: 600; color: white; letter-spacing: .06em; text-transform: uppercase; }
+  .checkout-right { background: #F9F7F4; border-left: 1px solid #EEE; padding: 24px; }
+  .cr-title { font-size: 12px; font-weight: 600; color: var(--ink-2); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 16px; }
+  .cr-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .cr-thumb { width: 36px; height: 44px; background: #EDE5D8; border-radius: 0; flex-shrink: 0; }
+  .cr-item-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+  .cr-item-size { font-size: 12px; color: var(--ink-3); }
+  .cr-item-price { font-size: 12px; font-weight: 600; color: var(--ink); margin-left: auto; }
+  .cr-divider { height: 1px; background: #EEE; margin: 12px 0; }
+  .cr-total-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .cr-total-label { font-size: 12px; color: var(--ink-2); }
+  .cr-total-val { font-size: 12px; font-weight: 500; color: var(--ink); }
+  .cr-grand { font-size: 12px; font-weight: 700; color: var(--ink); }
+
+  section { padding: 100px 48px; }
+  .section-label {
+    font-size: 12px; font-weight: 500; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 56px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--accent-light); }
+  .section-num { font-size: 72px; font-weight: 200; letter-spacing: -.04em; color: var(--accent-light); line-height: 1; margin-bottom: -16px; }
+  .section-heading { font-size: clamp(28px, 3.2vw, 48px); font-weight: 200; line-height: 1.15; letter-spacing: -.025em; margin-bottom: 28px; }
+  .section-heading strong { font-weight: 600; }
+  .body-text { font-size: 20px; font-weight: 300; line-height: 1.9; color: var(--ink-2); max-width: 640px; }
+
+  /* Custom Divider added for spacing between contexts */
+  .custom-divider {
+    width: 100%;
+    max-width: 640px;
+    height: 1px;
+    background: var(--accent-light);
+    margin: 48px 0;
+  }
+
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Context */
+  .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .problem-stat {
+    display: flex; align-items: flex-start; gap: 20px;
+    padding: 28px 0; border-bottom: 1px solid var(--accent-light);
+  }
+  .problem-stat:first-child { border-top: 1px solid var(--accent-light); }
+  .ps-num { font-size: 40px; font-weight: 200; letter-spacing: -.04em; color: var(--accent-warm); line-height: 1; min-width: 90px; }
+  .ps-num span { font-weight: 600; }
+  .ps-text { padding-top: 6px; }
+  .ps-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .ps-desc { font-size: 13px; font-weight: 300; color: var(--ink-2); line-height: 1.6; }
+
+  /* Friction points */
+  .friction-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+    background: var(--accent-light); border: 1px solid var(--accent-light); margin-top: 48px;
+  }
+  .friction-card { background: var(--bg); padding: 32px 28px; }
+  .fc-num { font-size: 12px; font-weight: 400; letter-spacing: .16em; color: var(--ink-3); margin-bottom: 16px; text-transform: uppercase; }
+  .fc-title { font-size: 14px; font-weight: 500; margin-bottom: 10px; }
+  .fc-body { font-size: 12px; font-weight: 300; color: var(--ink-2); line-height: 1.7; }
+  .fc-impact {
+    margin-top: 16px; font-size: 12px; font-weight: 500; color: var(--accent-warm);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .fc-impact::before { content: '↑'; font-size: 12px; }
+
+  /* Research List Layout */
+  .research-list { margin-top: 48px; }
+  .ri-stat { font-size: 24px; font-weight: 200; color: var(--accent); letter-spacing: -.03em; }
+  .ri-stat span { font-weight: 600; }
+
+  /* Horizontal Scroll Strip Container Framework */
+  .scroll-strip {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    width: 100%;
+    height: 340px; 
+    margin-top: 40px;
+    padding-bottom: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-light) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-strip::-webkit-scrollbar {
+    height: 4px;
+  }
+  .scroll-strip::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-strip::-webkit-scrollbar-thumb {
+    background: var(--accent-light);
+    border-radius: 2px;
+  }
+  .scroll-image-wrap {
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+  
+  /* Core Drag Fix: Added styling rules to block native system shortcut file extraction dragging */
+  .scroll-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 0 !important;
+  }
+  .scroll-image-wrap:hover img {
+    transform: scale(1.08);
+  }
+
+  /* Warm Cream Blurry Lightbox Overlay Layer Configuration */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(246, 243, 238, 0.88); 
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .lightbox-img {
+    max-width: 85vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 0;
+    box-shadow: 0 32px 72px rgba(20, 18, 16, 0.12);
+    transform: scale(0.96);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  .lightbox.active .lightbox-img {
+    transform: scale(1);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 32px;
+    right: 48px;
+    background: none;
+    border: none;
+    font-family: var(--font);
+    font-size: 36px;
+    font-weight: 200;
+    color: var(--ink);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .lightbox-close:hover {
+    opacity: 0.5;
+  }
+
+  /* Pull quote container */
+  .pull-quote-wrapper { display: flex; flex-direction: column; gap: 40px; background: var(--warm-soft); padding: 80px 48px; }
+  .pull-quote { background: transparent; padding: 0; text-align: center; border-bottom: 1px solid var(--accent-light); padding-bottom: 40px; }
+  .pull-quote:last-child { border-bottom: none; padding-bottom: 0; }
+  .pq-text { font-size: clamp(22px, 3vw, 48px); font-weight: 200; line-height: 1.3; letter-spacing: -.03em; max-width: 800px; margin: 0 auto; }
+  .pq-text strong { font-weight: 700; color: var(--accent); }
+  .pq-source { font-size: 12px; font-weight: 400; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); margin-top: 28px; }
+
+  /* Next */
+  .next-project {
+    background: var(--ink); padding: 100px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .np-label { font-size: 12px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+  .np-title { font-size: clamp(28px, 3.5vw, 52px); font-weight: 200; color: white; letter-spacing: -.03em; line-height: 1.15; }
+  .np-title strong { font-weight: 700; display: block; }
+  .np-link { display: flex; align-items: center; gap: 16px; font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; cursor: none; transition: color .2s; }
+  .np-link:hover { color: white; }
+  .np-arrow { width: 48px; height: 48px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; transition: background .2s; }
+  .np-link:hover .np-arrow { background: rgba(255,255,255,0.08); }
+
+  footer {
+    background: var(--ink); padding: 24px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  footer span { font-size: 12px; font-weight: 300; letter-spacing: .08em; color: rgba(255,255,255,0.3); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="progress"></div>
+
+<div id="lightbox" class="lightbox">
+  <button class="lightbox-close" aria-label="Close modal">&times;</button>
+  <img src="" alt="" class="lightbox-img">
+</div>
+
+<nav id="nav">
+  <a href="portfolio.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M10 12L6 8l4-4"/>
+    </svg>
+    Back to work
+  </a>
+  <span class="nav-center">Case Study 02</span>
+  <span class="nav-tag">governance · cybersecurity</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">The Bet</p>
+    <h1 class="hero-title">
+      Cybersecurity is no longer an IT problem. <br> It's a board-level legal liability<br>
+      <strong>Regulators don't ask "did you engage?" They ask "can you prove it?"</strong>
+    </h1>
+      <p class="body-text reveal" style="margin-top:16px">
+     — So I designed the missing tool
+      </p>
+
+  </div>
+  <div class="hero-right">
+    <img src="https://i.postimg.cc/500ndx4C/Frame-450.png" alt="Dashboard Analysis" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 0; display: block; box-shadow: 0 32px 72px rgba(20,18,16,0.08); -webkit-user-drag: none;">
+  </div>
+</div>
+
+<div class="hero-overview reveal">
+  <div class="overview-row">
+    <div class="overview-cell">
+      <div class="ov-label">My Role</div>
+      <div class="ov-val">Product Designer<br>end-to-end</div>
+    </div>
+    <div class="overview-cell">
+      <div class="ov-label">Timeline</div>
+      <div class="ov-val">09 weeks<br>March 26, 2026 - May 26, 2026</div>
+    </div>
+    <div class="overview-cell">
+      <div class="ov-label">Tools</div>
+      <div class="ov-val">Figma, FigJam <br>Notion, Claude</div>
+    </div>
+  </div>
+</div>
+
+<div class="reveal" style="background: var(--warm-soft); border-top: 1px solid var(--accent-light); border-bottom: 1px solid var(--accent-light); padding: 32px 48px; text-align: center;">
+  <p style="body-text reveal">
+    <strong> </strong> " The implementation is a design proposal, not a shipped product. The personas are constructed from publicly documented experiences. But the regulatory gap it addresses is real. "
+  </p>
+</div>
+
+
+
+<section style="background:var(--white)">
+  <div class="context-grid">
+    <div>
+      <div class="section-num reveal">01</div>
+      <h2 class="section-heading reveal">
+        What Was <strong>Missing</strong>
+      </h2>
+    </div>
+    <div>
+      <p class="body-text reveal">
+        Richard Chen is the CFO of Harmon. He's been on the board for six years and has approved every cybersecurity budget without fully understanding a single one. Not because he was careless—but because every CISO report he's ever received was written for someone with a CISSP certification. He trusted the room. He signed.
+      <p class="body-text reveal" style="margin-top:16px">
+        Last quarter, he approved a $420K cybersecurity budget in four minutes. He hasn't slept well since.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        <strong>Under NIS2, SEC disclosure rules, and DORA</strong>—intent is no longer enough. Neither is trust.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Board members are now individually required to prove <strong>what they knew, what they asked, and why they believed the risk was acceptable.</strong>
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Richard followed the process that worked for decades. The regulators want something different now: <strong>a live document of every decision. Visible. Defensible. Traceable.</strong>
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Standard tools—SecurityScorecard, CyberSaint, Vanta—report to security teams. They were built for analysts, not board oversight. None can prove a director engaged with a specific decision at a specific moment on a specific day.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The law changed. The tools didn't. Every existing governance process lives in gray territory.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        <strong style="color: var(--accent);">Vigil</strong> is the first tool designed specifically to operate outside that gray. Every status update, every budget request, every moment a director individually considered a decision, captured in real time, timestamped, attributed, immutable.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        <strong style="color: var(--accent);">Vigil</strong> doesn't replace the paperwork. It makes gray territory architecturally impossible.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        When investigators ask what Richard knew, what he considered, and when—<strong style="color: var(--accent);">Vigil</strong> answers with a record that was never capable of being anything other than true.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-num reveal">02</div>
+  <h2 class="section-heading reveal">
+    The Calls <strong>I Made</strong>
+  </h2>
+
+  <div class="research-list">
+    <div class="context-grid" style="padding: 40px 0; border-top: 1px solid var(--accent-light);">
+      <div>
+        <div class="section-num reveal" style="font-size: 36px; color: var(--accent);">01</div>
+      </div>
+      <div>
+        <div class="ri-stat reveal" style="margin-bottom: 16px;"> <span>Stability, Not Growth</span></div>
+        <p class="body-text reveal">The hardest constraint in <strong style="color: var(--accent);">Vigil</strong> isn't engineering. It's evidence of board oversight. If Vigil can't prove the board understood the risk before they acted, then the product has already failed.</p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Instead of simplifying a cybersecurity dashboard, I started looking for a different visual language entirely. The first round had 10+ directions — Sales Analysis, Operational Efficiency, Target vs. Growth. Every one of them shared the same grammar: progress toward a goal. Security doesn't work that way. It needs stability, not growth.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The second round narrowed to visuals where stability is the normal state. A medical monitor had the right urgency hierarchy — but Richard isn't used to reading one. A stock chart is his native language. He's read one every Monday morning for thirty years. The candlestick carried the right grammar but risked one question: "Is this a stock?" I chose the mountain. Same time-based structure. That question disappears. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        In the third round, I added two threshold lines — 74% and 49%. Above 74%: stable, no action required. Between 74% and 49%: something has shifted — the security team is managing it, with or without a budget request. Below 49%: high-risk, immediate board attention required. But one risk remained. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Richard only logs in quarterly — and between reviews, the visual grammar fades. A board member who hasn't opened <strong style="color: var(--accent);">Vigil</strong> in six weeks shouldn't need to remember what 74% means. Two things make that possible. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The first is a footnote beneath the mountain. One line of plain language under every state: "No board action required." Or: "Board oversight required." The mountain shows the shape. The footnote names it. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The second is the status signal. Traffic light logic was the obvious choice — every person in that boardroom learned it before they learned to drive. But the default traffic light has two distinct accessibility failures — and each required a different fix. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Red-green color blindness affects 8% of the population, collapsing the most critical signal distinction into indistinguishable territory. I replaced green with Intense Azure (#0071E3), red with Deep Crimson (#960018) — removing the problematic pairing without losing the traffic light logic the board already understands. Amber was a different problem. Standard yellow fails WCAG contrast requirements on light backgrounds. I replaced it with Mellow Brown (#B36B00) — contrast grounds alone. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        I anchored the surrounding interface to two neutrals — Sonic Silver (#767676) and light gray (#EDEDED) — so the status colors never have to compete with anything for attention. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The mountain communicates posture to a board member in seconds. Every operational metric — CVE counts, patch compliance rates, incident timelines, mean time to detect — that didn't answer a governance question lives one click away. A security analyst opening Vigil would find it thin. Anyone who needs the full picture, it's there. As evidence. 
+      </p>
+
+      </div>
+      <div class="scroll-strip reveal">
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/0jHNW0tB/Desktop-102.png" alt="Home Page"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/MpPRQ10C/Desktop-94.png" alt="Home Page"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/Ss35gX68/Desktop-95.png" alt="Analyzing user laptop sessions"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/Pfv0P4Hv/Desktop-96.png" alt="UX heatmaps mapping"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/KvnV58RT/Desktop-97.png" alt="Tracking interaction states"></div>
+      </div>
+    </div>
+
+    <div class="context-grid" style="padding: 40px 0; border-top: 1px solid var(--accent-light);">
+      <div>
+        <div class="section-num reveal" style="font-size: 36px; color: var(--accent);">02</div>
+      </div>
+      <div>
+        <div class="ri-stat reveal" style="margin-bottom: 16px;"> <span>Machines Can't Testify</span></div>
+        <p class="body-text reveal">For data input, the obvious move is automation: pull live data from security dashboards, convert metrics into business impact, feed it to the mountain. JSON makes it easy. JSON makes it fast.</p>
+      <p class="body-text reveal" style="margin-top:16px">
+        JSON also makes it unaccountable.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        If a cybersecurity platform flags a false positive and the mountain turns amber, every board member in that room will ask the CISO for an explanation. Now the CISO has to defend a machine's output instead of their own judgment. And if the CISO is defending a system's mistake rather than their own decision, that record won't survive legal scrutiny. A tool designed for evidence can't depend on systems that deflect accountability. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        So I chose manual input. Not because automation is wrong. Because evidence requires accountability—and machines can't testify. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Manual input means the CISO doesn't explain a system's mistake. They explain their judgment. Every submission is timestamped. Every choice is recorded. They're not fighting automated noise. They're making decisions. And those decisions are now evidence. 
+      </p>
+
+      </div>
+      <div class="scroll-strip reveal">
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/jSvRZXL4/Desktop-86.png" alt="Drop-off conversion metrics"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/SN6Szq4f/Desktop-87.png" alt="Funnel optimization pathways"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/J7B4MZd9/Desktop-88.png" alt="Mixpanel breakdown"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/pXzTYzfh/Desktop-89.png" alt="Mobile checkout responsive review"></div>
+      </div>
+    </div>
+
+    <div class="context-grid" style="padding: 40px 0; border-top: 1px solid var(--accent-light);">
+      <div>
+        <div class="section-num reveal" style="font-size: 36px; color: var(--accent);">03</div>
+      </div>
+      <div>
+        <div class="ri-stat reveal" style="margin-bottom: 16px;"><span>One Forced Structure</span></div>
+        <p class="body-text reveal">Cybersecurity investments come in infinite varieties: efficiency gains, gap remediation, insurance requirements, regulatory deadlines, threat response. The CISO recognizes their weight in seconds. Boards don't.</p>
+      <p class="body-text reveal" style="margin-top:16px">
+        One forced structure solves it. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Three categories. Maximum three. Not because three is magic. Because three matches the mountain's traffic light logic from Call-1: Intense Azure (Blue), Mellow Brown (Amber), Deep Crimson (Red). The board already reads this language. Using it here eliminates a second learning curve. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        When the CISO submits a budget request, they must choose one: 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Blue (Strategic): A calm situation. The CISO is claiming this is building, not reacting. Improves efficiency, builds capability, strengthens resilience, or advances long-term posture. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Amber (Priority): The middle territory. The organization isn't under attack. The cybersecurity team is in full control — they know the weak spots well. Addresses an active gap, insurance requirement, or near-term risk. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Red (Critical): Survival challenge. Active attack (ransomware, DDoS, data breach), immediate threat, or regulatory deadline. It has two distinct scenarios. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Scenario-1: Regulatory deadline. Unlike insurance requirements, regulatory deadlines aren't negotiable. They're career-defining. The CISO can't minimize them. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Scenario-2: Active attack. Revenue stops immediately. Customer transactions halt. Employees stop working. The company enters operational paralysis. Everyone's mind shifts to survival mode. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The boardroom changes tone. They are not judging the CISO's requested amount. They are asking: "Can we operate tomorrow?" "Are customer funds safe?" "How long until markets react?" 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Approving budget becomes non-optional. The board needs answers in seconds. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        If a board member has to scroll to find the requested amount, I haven't reduced cognitive load. I've added it. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Blue and Amber show the budget request after details. Red needs to show the requested amount first. But a different structure in a crisis doesn't reduce load — it adds more. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        So I kept Red's structure identical to Blue and Amber. Same form. Same radio buttons. Request amount, ROI, and priority level in 32px text — always at the top. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        In the real world, cyberattacks unfold in 3-5 phases. Phase 1-2 is stopping the bleeding. The CISO uses emergency funds and wastes zero time on approval. Vigil goes offline. It doesn't change the fact even if Vigil runs on a separate server. The CISO is no longer discussing "vulnerabilities." They are discussing operational survivability, business continuity, public trust. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        So I didn't design anything for that situation. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Phases 3-5 are calmer. That's when the CISO reports what happened and what else they need. Vigil's back. That's where they use it. 
+      </p>
+
+      </div>
+      <div class="scroll-strip reveal">
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/bJL5t2tN/Desktop-100.png" alt="Usability test setup"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/vms22v7d/Desktop-101.png" alt="Think-aloud sequence session"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/26HH6Rs6/Desktop-107.png" alt="User interview observation"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/mktm1p48/Desktop-108.png" alt="Coding user feedback data"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/Cxf9Q1W5/Desktop-90.png" alt="User hesitation study"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/8CQxQGS2/Desktop-106.png" alt="User hesitation study"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/gJG5jKrV/Desktop-91.png" alt="User hesitation study"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/WzCXGmbs/Desktop-109.png" alt="User hesitation study"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/v8Nqwy7j/Desktop-110.png" alt="Synthesizing testing data"></div>
+      </div>
+    </div>
+
+    <div class="context-grid" style="padding: 40px 0; border-top: 1px solid var(--accent-light); border-bottom: 1px solid var(--accent-light);">
+      <div>
+        <div class="section-num reveal" style="font-size: 36px; color: var(--accent);">04</div>
+      </div>
+      <div>
+        <div class="ri-stat reveal" style="margin-bottom: 16px;"><span>Political Liability by Design</span></div>
+        <p class="body-text reveal">A record that can't be edited, deleted, or backdated after submission. It's a double-edged sword. It's not a shield.</p>
+      <p class="body-text reveal" style="margin-top:16px">
+        So why would anyone use it? 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        One breach. Three perspectives. Each one facing the same record from a different side. 
+      </p>
+      <div class="custom-divider reveal"></div>
+      <p class="body-text reveal" style="margin-top:16px">
+        Elena Vasquez is 61. She was planning to retire at 63. Nine years ago she invested $2.3M in Harmon. Since then her stake had grown to $3.2M — the number she and her husband had worked out on a yellow legal pad at their kitchen table. The house in Lisbon they'd already looked at twice. The plan was close. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        On a Tuesday, Harmon suffered a breach. By Thursday her position had collapsed 34%. By the following Monday she understood that 63 was no longer a number — it was a door that had quietly closed. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        She didn't cry. She got very still. And then she hired a lawyer. 
+      </p>
+      
+      <div class="custom-divider reveal"></div>
+      
+      <p class="body-text reveal" style="margin-top:16px">
+        Four weeks before that Tuesday, Marcus Sterling — CISO of Harmon — found it. Filed a remediation request. $340K. Specific gap. Specifically said: "This is the one I'm worried about." 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The board had approved $420K in cybersecurity spend just last quarter. They declined the $340K. The minutes listed the risk as manageable. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The breach happened in the vendor authentication layer. Exactly where Marcus said it would. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Elena's lawsuit wasn't anger. It was the only language left. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Her lawyer's first question was simple: "What did the board know — and when?" 
+      </p>
+      
+      <div class="custom-divider reveal"></div>
+      
+      <p class="body-text reveal" style="margin-top:16px">
+        Richard is in a conference room with his lawyer, reviewing subpoenaed records. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        "Do you have anything showing what you knew and when?" 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Richard opens Vigil. A declined red request. Filed by Marcus Sterling. Registered as an immediate threat. He saw it. He clicked "Noted" — timestamped, attributed, immutable, documented in real time by a system that was never capable of being anything other than true. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        But his lawyer pulled three years of data. Eleven investment requests total. The last four: all red. AI efficiency improvement. Registered red. Insurance requirement. Registered red. System upgrade. Registered red. Immediate threat. Registered red. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Marcus used red so many times that red stopped meaning anything. Richard didn't ignore the warning. He'd been trained to absorb it. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The same record Elena's lawyer is holding. Three people. Different positions. 
+      </p>
+      
+      <div class="custom-divider reveal"></div>
+      
+      <p class="body-text reveal" style="margin-top:16px">
+        Vigil doesn't choose sides. It doesn't protect the board. It doesn't protect the CISO. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Both walk away when both acted reasonably. Neither walks away when they didn't. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        It's not a shield. It's not a sword. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        It's just a mirror. 
+      </p>
+
+     </div>
+      <div class="scroll-strip reveal">
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/przqBh9V/Desktop-98.png" alt="Competitive product comparison"></div>
+        <div class="scroll-image-wrap"><img src="https://i.postimg.cc/BZKY3ymm/Desktop-99.png" alt="E-commerce layout mapping"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="section-num reveal">03</div>
+  <h2 class="section-heading reveal">
+    The Rules I<br><strong>Designed By</strong>
+  </h2>
+  
+  <div class="friction-grid" style="margin-top:48px">
+    
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 01</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>The record is append-only.</span> No entry can be edited, deleted, or backdated after submission.
+      </div>
+    </div>
+    
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 02</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>The CISO controls the narrative.</span> No word in the CISO's submission may be generated, suggested, or altered by the system.
+      </div>
+    </div>
+
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 03</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>The system controls the signal.</span> One red anywhere — insurance, legal, budget — makes the mountain red. One amber with no red makes the mountain amber. Every input blue, the mountain is blue.
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 04</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>Submission is irreversible.</span> A submitted record can only be superseded — never replaced or removed.
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 05</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>Every submission is named.</span> The CISO submits under their own identity. No intermediary, proxy, or system agent may create a record on their behalf.
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 06</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        No comment, like, or vote may exist in the system.<span> Vigil documents decisions. It does not shape them.</span>
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 07</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        Budget release happens on paper. <span>Vigil captures engagement.</span> It does not authorize spend. That boundary cannot move.
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 08</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        Red uses the same structure as blue and amber. <span>No layout change, modal, or mode switch may be introduced for any status state.</span>
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 09</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        Every pixel is there for a legal reason. Nothing decorative. Nothing that suggests this was built for convenience. <span>This was built for court.</span>
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 10</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>The status note is system-generated and immutable. </span> No human may edit the plain-language statement attached to a signal score. 
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 11</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>The record of a rejected budget request is permanent. </span> A rejection cannot be hidden, archived, or removed from the board view. 
+      </div>
+    </div>
+    <div class="friction-card reveal">
+      <div class="fc-num">Rule 12</div>
+      <div class="ri-stat reveal" style="margin-bottom: 16px;">
+        <span>Post-meeting documentation is CISO-only. </span> After a board meeting, only the CISO may upload supporting evidence — notes, PDFs, audio, video — to the record. 
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="reveal" style="margin-top:56px; width:100%; border: 1px solid var(--accent-light); border-radius:0; overflow:hidden; background:var(--white); box-shadow:0 24px 48px rgba(0,0,0,0.04);">
+    <div style="padding:16px 24px; background:var(--bg-alt); font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-2); display:flex; align-items:center; gap:8px;">
+      <span style="display:inline-block; width:6px; height:6px; background:var(--accent-warm); border-radius:50%;"></span>
+      Interaction flow
+    </div>
+    <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000;">
+        <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1198389953?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;loop=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Vigil"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+        </div>
+  </div>
+</section>
+
+<section style="background: var(--warm-soft);">
+  <div class="section-num reveal">04</div>
+  <h2 class="section-heading reveal">
+    What I<br><strong>Gave Up</strong>
+  </h2>
+
+  <div class="pull-quote-wrapper" style="background: transparent; padding: 0; margin-top: 48px;">
+    <div class="pull-quote">
+      <p class="pq-text reveal">
+      </p>
+    </div>
+
+    <div class="pull-quote">
+      <p class="pq-text reveal">
+        "Vigil is not designed for comfort. <strong>Every record exists for court, not conversation. </strong>"
+      </p>
+    </div>
+
+    <div class="pull-quote">
+      <p class="pq-text reveal">
+        " The board has two options: View Full Document and Noted. Noted exist as pre-meeting session. Only the CISO can upload discussion after a decision. <strong>Any question a board member kept to themselves, any doubt they never voiced, vanishes instantly.</strong> It cannot be presented as evidence in court. "
+      </p>
+    </div>
+    <div class="pull-quote">
+      <p class="pq-text reveal">
+        " The CISO has a Preview button. A declaration is irreversible. If it's a human error, a normal declaration moves to the ledger alongside a corrected one. But <strong>an investment request cannot move without attached evidence.</strong> Both versions live in the ledger permanently "
+      </p>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--white)">
+  <div class="context-grid">
+    <div>
+      <div class="section-num reveal">05</div>
+      <h2 class="section-heading reveal">
+        What <strong>Shifted</strong>
+      </h2>
+    </div>
+    <div>
+      <p class="body-text reveal">
+        Three weeks into designing Vigil, I almost deleted everything.
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        I had a working prototype. An automated governance instrument. It gives directors cyber risk visibility in a language they already speak — so they can understand risk without technical expertise. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Then I stress-tested it. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The CISO's first question stopped everything. "Who's liable when it's wrong? If Vigil translates a red alert as amber and the board doesn't escalate, and a breach happens, did the tool fail or did I? I spent 15 years building credibility in that room. My name is on the governance report, not Vigil's." 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The CFO wasn't gentler. "You're telling me a JSON feed translated into a dashboard is going to convince my board? They don't trust dashboards. They trust people." 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        I had looked at a communication failure and followed the noise. I thought directors would understand cyber risk flawlessly. That security analysts would waste zero time on jargon translation. That clarity was the problem. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        But I had broken something more important than clarity. I had broken trust. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        If I added an override function, the CISO would have to verify it. The board would have to ask the CISO before reacting. It was worse than a slide deck the CISO prepared himself. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        I had the feeling of someone who'd broken a working system trying to fix a problem that wasn't there. Does this deserve to exist? Why did I start it? 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Then I made a decision. Twenty-four hours. That's how long I'd look for a reason. If I couldn't find one, Vigil was gone. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Within 14 minutes I found it. It had been in front of me the whole time. I was too deep in translation to see it. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        The legal landscape for board members had shifted. Not gradually. Structurally. Board members can now be personally banned from leadership if they can't prove they exercised cyber oversight. Intent is no longer enough. Neither is trust. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        I hadn't designed a security tool. I had designed a governance instrument. And no tool existed yet as evidence of board oversight. 
+      </p>
+      <p class="body-text reveal" style="margin-top:16px">
+        Designing something that doesn't exist yet. That was the point from the beginning. 
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<div class="next-project">
+  <div>
+    <div class="np-label">Back to the start</div>
+    <div class="np-title">
+      Simplified cross-brand<br><strong>product discovery and <br>comparison.</strong>
+    </div>
+  </div>
+  <a href="case-study-01.html" class="np-link">
+    View case study 01
+    <div class="np-arrow">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="white" stroke-width="1.5">
+        <path d="M4 14L14 4M14 4H7M14 4V11"/>
+      </svg>
+    </div>
+  </a>
+</div>
+
+<footer>
+  <span>© Wazidul Islam</span>
+  <a href="portfolio.html" style="font-size:12px; font-weight:300; letter-spacing:.08em; color:rgba(255,255,255,0.3); text-decoration:none; cursor:none; transition:color .2s" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">← Back to portfolio</a>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  
+  function animate() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    const h = document.body.scrollHeight - window.innerHeight;
+    progress.style.width = (window.scrollY / h * 100) + '%';
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const siblings = [...el.parentElement.querySelectorAll('.reveal')];
+        const idx = siblings.indexOf(el);
+        setTimeout(() => el.classList.add('visible'), idx * 80);
+        obs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Lightbox Operational Script Execution
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = lightbox.querySelector('.lightbox-img');
+  const lightboxClose = lightbox.querySelector('.lightbox-close');
+
+  document.querySelectorAll('.scroll-image-wrap img').forEach(img => {
+    // JS Override Fix: Prevent browser from launching native image dragging framework
+    img.addEventListener('dragstart', (e) => e.preventDefault());
+
+    img.addEventListener('click', () => {
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      lightbox.classList.add('active');
+    });
+  });
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target !== lightboxImg && e.target !== lightboxClose) {
+      lightbox.classList.remove('active');
+    }
+  });
+  
+  lightboxClose.addEventListener('click', () => {
+    lightbox.classList.remove('active');
+  });
+</script>
+</body>
+</html>
