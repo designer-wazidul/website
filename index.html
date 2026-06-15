@@ -249,7 +249,7 @@
   }
 
   /* Work Section */
-  .work { padding-top: 100px; }
+  .work { padding-top: 100px; background: #FDFCFA; }
 
   .project {
     display: grid;
@@ -620,6 +620,143 @@
     color: var(--ink-tertiary);
   }
 
+  /* Journey / So Far */
+  .journey { padding: 120px 48px; background: #F6F3EE; }
+
+  .journey-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .tl-rail {
+    border-left: 1px solid var(--accent-light);
+    margin-left: 5px;
+  }
+
+  .tl-item {
+    position: relative;
+    padding: 0 0 36px 28px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .tl-item.visible { opacity: 1; transform: translateY(0); }
+  .tl-item:last-child { padding-bottom: 0; }
+
+  /* Dot on the rail */
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -5px; top: 5px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--accent-light);
+  }
+
+  /* Root/origin dot — filled accent */
+  .tl-trigger::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    width: 12px; height: 12px;
+    left: -6px; top: 4px;
+  }
+
+  .tl-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tl-name {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -.01em;
+  }
+
+  .tl-dur {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-tertiary);
+  }
+
+  /* CTA — mirrors .project-link but with chevron instead of diagonal arrow */
+  .journey-cta {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    cursor: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color .2s;
+    position: relative;
+  }
+  .journey-cta::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    right: 22px; /* stops before the chevron */
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .3s ease;
+  }
+  .journey-cta:hover { color: var(--ink); }
+  .journey-cta:hover::after { transform: scaleX(1); }
+
+  /* Chevron rotates 180° when expanded */
+  .journey-chevron { transition: transform .35s cubic-bezier(.4,0,.2,1); flex-shrink: 0; }
+  .journey-cta[aria-expanded="true"] .journey-chevron { transform: rotate(180deg); }
+
+  /* Collapse container */
+  .journey-expand {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height .55s cubic-bezier(.4,0,.2,1), opacity .4s ease;
+  }
+  .journey-expand.open { max-height: 1000px; opacity: 1; }
+
+  .journey-expand-inner { padding: 20px 0 4px; }
+
+  .journey-body {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--ink-secondary);
+    margin-bottom: 20px;
+  }
+
+  /* "Show less" — fixed upward chevron, always closes */
+  .journey-less {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-tertiary);
+    cursor: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
+  }
+  .journey-less:hover { color: var(--ink); }
+
   /* Contact */
   .contact {
     background: var(--accent);
@@ -825,6 +962,76 @@ that make the right decision<br>
   </div>
 </section>
 
+<!-- JOURNEY / SO FAR -->
+<section class="journey" id="journey">
+  <div class="section-label">So Far</div>
+  <div class="journey-wrap">
+    <div class="tl-rail">
+
+      <div class="tl-item">
+        <div class="tl-row">
+          <span class="tl-name">Case Study 2</span>
+          <span class="tl-dur">2 months</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-row">
+          <span class="tl-name">Case Study 1</span>
+          <span class="tl-dur">6 weeks</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-row">
+          <span class="tl-name">Figma</span>
+          <span class="tl-dur">3 months</span>
+        </div>
+      </div>
+
+      <!-- Origin trigger — expands inline -->
+      <div class="tl-item tl-trigger">
+        <div class="tl-row">
+          <button class="journey-cta" id="journey-btn" onclick="toggleJourney()" aria-expanded="false" aria-controls="journey-expand">
+            From Code to Canvas
+            <svg class="journey-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M2 5L7 10L12 5"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="journey-expand" id="journey-expand" aria-hidden="true">
+          <div class="journey-expand-inner">
+            <p class="journey-body">
+I was applying UX principles before I even knew they existed.
+<br> <br>
+My journey in Computer Science and Technology began with assembling my first PC. I dove into motherboards, Intel versus Ryzen debates, and endless comparisons across dozens of sites.
+<br>
+Holding a machine I built myself felt like unlocking a new world.
+<br> <br>
+With that PC, I explored everything: programming, Linux, networking, and data entry.
+<br>
+A year later, after upgrading an acquaintance’s outdated laptop from Windows-XP to Windows-10, people began seeing me as the go-to tech person.
+<br>
+Over time, the excitement faded, and that identity started to feel like a trap.
+<br> <br>
+
+That was when I shifted toward design. Figma, color theory, and the Laws of UX reframed how I approached problems.
+<br>
+After three months of focused practice, a familiar sense of joy returned. It was the same satisfaction I used to feel designing project cover pages or building cardboard prototypes, like custom pen boxes or cable organizers for my PC.
+<br>
+I realized I had been using the F-pattern, the 60-30-10 rule, and thoughtful typography long before learning the theory. Suddenly, the 'why' behind my decisions became clear.
+<br> <br>
+
+For the first time, finishing something didn't make me want to move on. It made me want to go further. I had found my Ikigai.
+        </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact" id="contact">
   <p class="contact-label">You've seen the work</p>
@@ -891,6 +1098,22 @@ that make the right decision<br>
   });
   const aboutText = document.getElementById('about-text');
   if (aboutText) observer.observe(aboutText);
+
+  // Timeline items — staggered fade-in
+  document.querySelectorAll('.tl-item').forEach((el, i) => {
+    el.dataset.delay = i * 120;
+    observer.observe(el);
+  });
+
+  // From Code to Canvas — expand / collapse
+  function toggleJourney() {
+    const expand  = document.getElementById('journey-expand');
+    const btn     = document.getElementById('journey-btn');
+    const isOpen  = expand.classList.contains('open');
+    expand.classList.toggle('open', !isOpen);
+    expand.setAttribute('aria-hidden', isOpen);
+    btn.setAttribute('aria-expanded', !isOpen);
+  }
 </script>
 </body>
 </html>
