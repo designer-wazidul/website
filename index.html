@@ -6,7 +6,7 @@
 <title>Portfolio — UX Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,14 +24,16 @@
     --font: 'Lexend', sans-serif;
   }
 
-  html { scroll-behavior: smooth; }
+  html { 
+    scroll-behavior: smooth; 
+    overflow-x: hidden; 
+  }
 
   body {
     font-family: var(--font);
     background: var(--bg);
     color: var(--ink);
     cursor: none;
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -389,152 +391,6 @@
     line-height: 1.5;
   }
 
-  /* Philosophy */
-  .philosophy { background: var(--white); }
-  .phil-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 80px;
-    align-items: start;
-  }
-  .phil-heading {
-    font-size: clamp(32px, 3.5vw, 52px);
-    font-weight: 200;
-    line-height: 1.15;
-    letter-spacing: -.025em;
-    position: sticky;
-    top: 120px;
-  }
-  .phil-heading strong {
-    display: block;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .phil-items { display: flex; flex-direction: column; gap: 0; }
-  .phil-item {
-    padding: 36px 0;
-    border-bottom: 1px solid var(--accent-light);
-    opacity: 0;
-    transform: translateX(30px);
-    transition: opacity .6s ease, transform .6s ease;
-  }
-  .phil-item.visible { opacity: 1; transform: translateX(0); }
-  .phil-item:first-child { border-top: 1px solid var(--accent-light); }
-  .phil-item-title {
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: -.01em;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .phil-num {
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: .14em;
-    color: var(--ink-tertiary);
-    min-width: 24px;
-  }
-  .phil-text {
-    font-size: 20px;
-    font-weight: 300;
-    line-height: 1.85;
-    color: var(--ink-secondary);
-    padding-left: 40px;
-  }
-
-  /* About */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: start;
-  }
-  .about-visual {
-    background: var(--bg-card);
-    aspect-ratio: 3/4;
-    position: relative;
-    overflow: hidden;
-  }
-  .about-visual-inner {
-    position: absolute; inset: 0;
-    background: linear-gradient(160deg, #C8DACC 0%, #A8BFB0 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 36px;
-  }
-  .about-visual-inner::before {
-    content: '';
-    position: absolute;
-    width: 260px; height: 260px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.12);
-    top: -80px; right: -60px;
-  }
-  .about-tag-row {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    position: relative; z-index: 1;
-  }
-  .about-tag {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    padding: 8px 16px;
-    background: rgba(255,255,255,0.9);
-    color: var(--accent);
-  }
-  .about-text-block {
-    padding-top: 40px;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity .7s ease, transform .7s ease;
-  }
-  .about-text-block.visible { opacity: 1; transform: translateY(0); }
-  .about-title {
-    font-size: clamp(28px, 3vw, 44px);
-    font-weight: 200;
-    line-height: 1.2;
-    letter-spacing: -.025em;
-    margin-bottom: 28px;
-  }
-  .about-title strong { font-weight: 600; }
-  .about-body {
-    font-size: 20px;
-    font-weight: 300;
-    line-height: 1.9;
-    color: var(--ink-secondary);
-    margin-bottom: 40px;
-  }
-  .about-body + .about-body { margin-top: -20px; }
-
-  /* Skills */
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--accent-light);
-    border: 1px solid var(--accent-light);
-    margin-top: 40px;
-  }
-  .skill-cell {
-    background: var(--bg);
-    padding: 20px 24px;
-  }
-  .skill-name {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: .06em;
-    margin-bottom: 4px;
-  }
-  .skill-sub {
-    font-size: 11px;
-    font-weight: 300;
-    color: var(--ink-tertiary);
-  }
-
   /* Journey / So Far */
   .journey { padding: 120px 48px; background: #F6F3EE; }
 
@@ -598,7 +454,7 @@
     color: var(--ink-tertiary);
   }
 
-  /* CTA — mirrors .project-link but with chevron instead of diagonal arrow */
+  /* CTA */
   .journey-cta {
     background: none;
     border: none;
@@ -620,7 +476,7 @@
     content: '';
     position: absolute;
     bottom: -2px; left: 0;
-    right: 22px; /* stops before the chevron */
+    right: 22px; 
     height: 1px;
     background: var(--accent);
     transform: scaleX(0);
@@ -630,7 +486,6 @@
   .journey-cta:hover { color: var(--ink); }
   .journey-cta:hover::after { transform: scaleX(1); }
 
-  /* Chevron rotates 180° when expanded */
   .journey-chevron { transition: transform .35s cubic-bezier(.4,0,.2,1); flex-shrink: 0; }
   .journey-cta[aria-expanded="true"] .journey-chevron { transform: rotate(180deg); }
 
@@ -639,9 +494,10 @@
     overflow: hidden;
     max-height: 0;
     opacity: 0;
-    transition: max-height .55s cubic-bezier(.4,0,.2,1), opacity .4s ease;
+    visibility: hidden;
+    transition: max-height .55s cubic-bezier(.4,0,.2,1), opacity .4s ease, visibility .4s ease;
   }
-  .journey-expand.open { max-height: 1000px; opacity: 1; }
+  .journey-expand.open { max-height: 1000px; opacity: 1; visibility: visible; }
 
   .journey-expand-inner { padding: 20px 0 4px; }
 
@@ -652,25 +508,6 @@
     color: var(--ink-secondary);
     margin-bottom: 20px;
   }
-
-  /* "Show less" — fixed upward chevron, always closes */
-  .journey-less {
-    background: none;
-    border: none;
-    padding: 0;
-    font-family: var(--font);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--ink-tertiary);
-    cursor: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: color .2s;
-  }
-  .journey-less:hover { color: var(--ink); }
 
   /* Contact */
   .contact {
@@ -748,13 +585,6 @@
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(32px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Separator */
-  .sep-line {
-    height: 1px;
-    background: var(--accent-light);
-    margin: 0 48px;
   }
 </style>
 </head>
@@ -899,7 +729,7 @@ that make the right decision<br>
 
       <div class="tl-item tl-trigger">
         <div class="tl-row">
-          <button class="journey-cta" id="journey-btn" onclick="toggleJourney()" aria-expanded="false" aria-controls="journey-expand">
+          <button type="button" class="journey-cta" id="journey-btn" aria-expanded="false" aria-controls="journey-expand">
             From Code to Canvas
             <svg class="journey-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
               <path d="M2 5L7 10L12 5"/>
@@ -929,7 +759,8 @@ that make the right decision<br>
               I realized I had been using the F-pattern, the 60-30-10 rule, and thoughtful typography long before learning the theory. Suddenly, the 'why' behind my decisions became clear.
               <br> <br>
               For the first time, finishing something didn't make me want to move on. It made me want to go further. I had found my Ikigai.
-            </p> </div>
+            </p> 
+          </div>
         </div>
       </div>
 
@@ -976,12 +807,11 @@ that make the right decision<br>
   }
   animateCursor();
 
-  // IntersectionObserver
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const el = entry.target;
-        const delay = el.dataset.delay || 0;
+        const delay = parseInt(el.dataset.delay || '0', 10);
         setTimeout(() => el.classList.add('visible'), delay);
         observer.unobserve(el);
       }
@@ -1009,15 +839,24 @@ that make the right decision<br>
     observer.observe(el);
   });
 
-  // From Code to Canvas — expand / collapse
+  // FIXED: From Code to Canvas — Safe Event Listener Approach
   function toggleJourney() {
     const expand  = document.getElementById('journey-expand');
     const btn     = document.getElementById('journey-btn');
+    if (!expand || !btn) return;
+    
     const isOpen  = expand.classList.contains('open');
     expand.classList.toggle('open', !isOpen);
     expand.setAttribute('aria-hidden', isOpen);
     btn.setAttribute('aria-expanded', !isOpen);
   }
+
+  // Hooking up the button after the DOM elements are loaded
+  const journeyBtn = document.getElementById('journey-btn');
+  if (journeyBtn) {
+    journeyBtn.addEventListener('click', toggleJourney);
+  }
+
 </script>
 </body>
 </html>
