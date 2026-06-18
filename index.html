@@ -284,6 +284,18 @@
     font-weight: 600;
     display: block;
   }
+  .project-title-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: none;
+    display: block;
+  }
+  .project-title-link .project-title {
+    transition: color .25s ease;
+  }
+  .project-title-link:hover .project-title {
+    color: var(--accent);
+  }
   .project-tags {
     display: flex; flex-wrap: wrap; gap: 8px;
     margin-bottom: 28px;
@@ -624,6 +636,7 @@
     #cursor, #cursor-ring { display: none !important; }
     body  { cursor: auto !important; }
     a, button { cursor: pointer !important; }
+    .project-title-link { cursor: pointer !important; }
 
     /* ── Navigation ── */
     nav {
@@ -854,10 +867,12 @@ that make the right decision<br>
   <div class="project">
     <div class="project-meta">
       <p class="project-num">02 / 02</p>
-      <h2 class="project-title">
-        What happens when UX has to 
+      <a href="CaseStudy2.html" class="project-title-link">
+        <h2 class="project-title">
+          What happens when UX has to 
 <em style="font-style:normal; font-weight:700">hold up in court</em>?
-      </h2>
+        </h2>
+      </a>
       <div class="project-tags">
         <span class="tag accent">governance</span>
         <span class="tag">cybersecurity</span>
@@ -882,10 +897,12 @@ that make the right decision<br>
   <div class="project">
     <div class="project-meta">
       <p class="project-num">01 / 02</p>
-      <h2 class="project-title">
-        Why I stopped designing for browsing and started designing for the
-        <em style="font-style:normal; font-weight:700">comparison moment</em>?
-      </h2>
+      <a href="CaseStudy1.html" class="project-title-link">
+        <h2 class="project-title">
+          Why I stopped designing for browsing and started designing for the
+          <em style="font-style:normal; font-weight:700">comparison moment</em>?
+        </h2>
+      </a>
       <div class="project-tags">
         <span class="tag accent">E-commerce</span>
         <span class="tag">Usability Testing</span>
