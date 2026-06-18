@@ -684,8 +684,8 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: flex-start; /* Task-1: Changed to flex-start to align elements to the top */
-      padding: 100px 40px 40px; /* Task-1: Added 100px top padding to sit cleanly below the cross mark */
-      gap: 36px;
+      padding: 72px 40px 40px;
+      gap: 28px;
       box-shadow: -10px 0 40px rgba(0,0,0,0.1);
       transition: right .4s cubic-bezier(0.25, 1, 0.25, 1);
     }
@@ -726,7 +726,8 @@
       grid-template-columns: 1fr;
       padding: 44px 0;
     }
-    .project-meta { padding-right: 0; margin-bottom: 28px; }
+    .project-meta { padding-right: 0; margin-bottom: 0; }
+    .project-visual { order: -1; margin-bottom: 28px; }
     .project-body { font-size: 17px; }
 
     /* ── Stats row ── */
