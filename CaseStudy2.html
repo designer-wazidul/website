@@ -429,6 +429,98 @@
   }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* =====================================================
+     MOBILE — max-width: 768px
+     ===================================================== */
+  @media (max-width: 768px) {
+
+    /* Remove custom cursor & hover-only zoom from touch devices */
+    #cursor, #cursor-ring { display: none !important; }
+    #zoom-panel, .zoom-lens { display: none !important; }
+    body { cursor: auto !important; font-size: 17px; }
+    a, button { cursor: pointer !important; }
+
+    /* ── Nav ── */
+    nav { padding: 18px 24px; }
+    .nav-tag { display: none; }
+    .nav-center { font-size: 11px; letter-spacing: .04em; }
+    .nav-back { font-size: 11px; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 100px 24px 48px;
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .hero-desc { max-width: 100%; font-size: 15px; }
+
+    /* ── Overview box ── */
+    .hero-overview { margin: 0 24px 48px; }
+    .overview-row { grid-template-columns: 1fr; }
+    .overview-row .overview-cell {
+      border-right: none;
+      border-bottom: 1px solid var(--accent-light);
+    }
+    .overview-row .overview-cell:last-child { border-bottom: none; }
+
+    /* ── Disclaimer banner ── */
+    .disclaimer-banner { padding: 24px !important; }
+
+    /* ── Sections ── */
+    section { padding: 72px 24px; }
+    .section-label { margin-bottom: 40px; }
+    .section-num { font-size: 56px; margin-bottom: -12px; }
+    .body-text { font-size: 17px; max-width: 100%; }
+
+    /* ── Context grid (used in multiple sections) ── */
+    .context-grid { grid-template-columns: 1fr; gap: 32px; }
+
+    /* ── Friction grid ── */
+    .friction-grid { grid-template-columns: 1fr; }
+    .friction-card { padding: 28px 24px; }
+
+    /* ── Scroll strip ── */
+    .scroll-strip { height: 240px; }
+
+    /* ── Pull quote ── */
+    .pull-quote-wrapper { padding: 48px 24px; }
+    .pq-text { font-size: clamp(20px, 5.5vw, 36px); }
+
+    /* ── Next project — stack vertically ── */
+    .next-project {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
+      padding: 64px 24px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 20px 24px;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+
+    /* ── Lightbox adjustments ── */
+    .lightbox-close { top: 16px; right: 20px; font-size: 28px; }
+    .lightbox-img { max-width: 95vw; max-height: 85vh; }
+  }
+
+  /* =====================================================
+     SMALL PHONES — max-width: 480px
+     ===================================================== */
+  @media (max-width: 480px) {
+    section { padding: 60px 20px; }
+    .hero { padding: 88px 20px 40px; }
+    .hero-overview { margin: 0 20px 40px; }
+    .next-project { padding: 52px 20px; }
+    footer { padding: 18px 20px; }
+    .friction-card { padding: 24px 20px; }
+    .pull-quote-wrapper { padding: 40px 20px; }
+    .scroll-strip { height: 200px; }
+  }
 </style>
 </head>
 <body>
@@ -492,7 +584,7 @@
   </div>
 </div>
 
-<div class="reveal" style="background: var(--warm-soft); border-top: 1px solid var(--accent-light); border-bottom: 1px solid var(--accent-light); padding: 32px 48px; text-align: center;">
+<div class="reveal disclaimer-banner" style="background: var(--warm-soft); border-top: 1px solid var(--accent-light); border-bottom: 1px solid var(--accent-light); padding: 32px 48px; text-align: center;">
   <p style="body-text reveal">
     <strong> </strong> " The implementation is a design proposal, not a shipped product. The personas are constructed from publicly documented experiences. But the regulatory gap it addresses is real. "
   </p>
