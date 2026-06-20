@@ -507,7 +507,7 @@
     visibility: hidden;
     transition: max-height .55s cubic-bezier(.4,0,.2,1), opacity .4s ease, visibility .4s ease;
   }
-  .journey-expand.open { max-height: 1000px; opacity: 1; visibility: visible; }
+  .journey-expand.open { max-height: 3000px; opacity: 1; visibility: visible; }
 
   .journey-expand-inner { padding: 20px 0 4px; }
 
@@ -1067,11 +1067,24 @@ that make the right decision<br>
     const expand  = document.getElementById('journey-expand');
     const btn     = document.getElementById('journey-btn');
     if (!expand || !btn) return;
-    
-    const isOpen  = expand.classList.contains('open');
-    expand.classList.toggle('open', !isOpen);
-    expand.setAttribute('aria-hidden', isOpen);
-    btn.setAttribute('aria-expanded', !isOpen);
+
+    const isOpen = expand.classList.contains('open');
+
+    if (!isOpen) {
+      // Measure full content height (works even when element is collapsed)
+      expand.style.maxHeight = expand.scrollHeight + 'px';
+      expand.classList.add('open');
+      expand.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+    } else {
+      // Lock at current rendered height first, then animate to 0
+      expand.style.maxHeight = expand.offsetHeight + 'px';
+      expand.offsetHeight; // force reflow so browser registers the starting value
+      expand.style.maxHeight = '0';
+      expand.classList.remove('open');
+      expand.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+    }
   }
 
   const journeyBtn = document.getElementById('journey-btn');
