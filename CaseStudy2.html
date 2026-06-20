@@ -387,12 +387,6 @@
   .np-link:hover { color: white; }
   .np-arrow { width: 48px; height: 48px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; transition: background .2s; }
   .np-link:hover .np-arrow { background: rgba(255,255,255,0.08); }
-  .np-title-link {
-    text-decoration: none;
-    color: inherit;
-    cursor: none;
-    display: block;
-  }
 
   footer {
     background: var(--ink); padding: 24px 48px;
@@ -500,21 +494,14 @@
       gap: 40px;
       padding: 64px 24px;
     }
-    .np-link { display: none; }
-    .np-title-link .np-title {
-      text-decoration: underline;
-      text-decoration-color: rgba(255,255,255,0.18);
-      text-underline-offset: 5px;
-    }
 
     /* ── Footer ── */
     footer {
       padding: 20px 24px;
-      flex-direction: row;
-      align-items: center;
-      gap: 0;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
     }
-    footer a { cursor: pointer !important; }
 
     /* ── Lightbox adjustments ── */
     .lightbox-close { top: 16px; right: 20px; font-size: 28px; }
@@ -562,7 +549,7 @@
 
 <div class="hero">
   <div class="hero-left">
-    <p class="hero-eyebrow">The Bet</p>
+    <p class="hero-eyebrow">Vigil</p>
     <h1 class="hero-title">
       Cybersecurity is no longer an IT problem. <br> It's a board-level legal liability<br>
       <strong>Regulators don't ask "did you engage?" They ask "can you prove it?"</strong>
@@ -1074,13 +1061,11 @@
 
 <div class="next-project">
   <div>
-    <div class="np-label">Back to the start</div>
-    <a href="CaseStudy1.html" class="np-title-link">
-      <div class="np-title">
-        Why I stopped designing <br>for browsing and started <br>designing for the
-          <br><em style="font-style:normal; font-weight:700">comparison moment</em>?
-      </div>
-    </a>
+    <div class="np-label">Next</div>
+    <div class="np-title">
+      Why I stopped designing <br>for browsing and started <br>designing for the
+        <br><em style="font-style:normal; font-weight:700">comparison moment</em>?
+    </div>
   </div>
   <a href="CaseStudy1.html" class="np-link">
     View case study 01
@@ -1092,10 +1077,6 @@
   </a>
 </div>
 
-<footer>
-  <span>© Wazidul Islam</span>
-  <a href="index.html" style="font-size:12px; font-weight:300; letter-spacing:.08em; color:rgba(255,255,255,0.3); text-decoration:none; cursor:none; transition:color .2s" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">← Back to portfolio</a>
-</footer>
 
 <script>
   const cursor = document.getElementById('cursor');
